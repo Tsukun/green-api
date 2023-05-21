@@ -18,6 +18,15 @@ const MainPage: React.FC = () => {
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       console.log(chatData);
+      if (chatData.phoneNumber.length != 11) {
+        alert("Указан некорректный номер");
+        setChatData({
+          idInstance: "",
+          apiTokenInstance: "",
+          phoneNumber: "",
+        });
+        return;
+      }
       if (
         chatData.apiTokenInstance === "" ||
         chatData.idInstance === "" ||
@@ -25,6 +34,22 @@ const MainPage: React.FC = () => {
       ) {
         alert("Заполните все поля ввода");
       } else {
+        if (
+          chatsList.some(
+            (element) =>
+              element.apiTokenInstance === chatData.apiTokenInstance &&
+              element.idInstance === chatData.idInstance &&
+              element.phoneNumber === chatData.phoneNumber
+          )
+        ) {
+          alert("Данный чат уже существует");
+          setChatData({
+            idInstance: "",
+            apiTokenInstance: "",
+            phoneNumber: "",
+          });
+          return;
+        }
         setChatData({ idInstance: "", apiTokenInstance: "", phoneNumber: "" });
         setChatList((oldList) => [...oldList, chatData]);
       }
