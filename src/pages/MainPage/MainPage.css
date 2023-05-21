@@ -65,7 +65,7 @@
 }
 
 .mainpage-background {
-  min-width: 100vw;
   min-height: 100vh;
+  min-width: 81vw;
   background-image: url("../../icons/whatsapp-background.jpg");
 }

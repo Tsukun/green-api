@@ -2,18 +2,18 @@ import * as React from "react";
 import "./MainPage.css";
 import ChatPreview from "../../components/ChatPreview/ChatPreview";
 import { useState } from "react";
-import { chatData } from "../../types";
+import { ChatData, ChatList } from "../../types";
 import Chat from "../Chat/Chat";
 
 const MainPage: React.FC = () => {
-  const [chatsList, setChatList] = useState<chatData[]>([]);
-  const [chatData, setChatData] = useState<chatData>({
+  const [chatsList, setChatList] = useState<ChatList[]>([]);
+  const [chatData, setChatData] = useState<ChatData>({
     idInstance: "",
     apiTokenInstance: "",
     phoneNumber: "",
   });
 
-  const [selectedChat, setSelectedChat] = useState<chatData>();
+  const [selectedChat, setSelectedChat] = useState<ChatData>();
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
@@ -37,9 +37,9 @@ const MainPage: React.FC = () => {
         if (
           chatsList.some(
             (element) =>
-              element.apiTokenInstance === chatData.apiTokenInstance &&
-              element.idInstance === chatData.idInstance &&
-              element.phoneNumber === chatData.phoneNumber
+              element.chatData.apiTokenInstance === chatData.apiTokenInstance &&
+              element.chatData.idInstance === chatData.idInstance &&
+              element.chatData.phoneNumber === chatData.phoneNumber
           )
         ) {
           alert("Данный чат уже существует");
@@ -51,7 +51,7 @@ const MainPage: React.FC = () => {
           return;
         }
         setChatData({ idInstance: "", apiTokenInstance: "", phoneNumber: "" });
-        setChatList((oldList) => [...oldList, chatData]);
+        setChatList((oldList) => [...oldList, { chatData, messages: [] }]);
       }
     }
   };
@@ -63,7 +63,7 @@ const MainPage: React.FC = () => {
     idInstance,
     apiTokenInstance,
     phoneNumber,
-  }: chatData) => {
+  }: ChatData) => {
     console.log(idInstance, apiTokenInstance, phoneNumber);
     setSelectedChat({
       ...selectedChat,
@@ -118,10 +118,11 @@ const MainPage: React.FC = () => {
                     <>
                       <div className="leftbar-item">
                         <ChatPreview
-                          key={index}
-                          {...element}
+                          key={"chatpreview" + index}
+                          {...element.chatData}
                           active={
-                            element.phoneNumber == selectedChat?.phoneNumber
+                            element.chatData.phoneNumber ==
+                            selectedChat?.phoneNumber
                           }
                           handleClick={handleSelectedChat}
                         ></ChatPreview>
@@ -134,7 +135,13 @@ const MainPage: React.FC = () => {
           </div>
           <div className="row_leftbar">
             {selectedChat ? (
-              <Chat {...selectedChat}></Chat>
+              chatsList.map((element, index) => {
+                return (
+                  element.chatData.phoneNumber == selectedChat.phoneNumber && (
+                    <Chat {...element} key={"chat" + index}></Chat>
+                  )
+                );
+              })
             ) : (
               <div className="mainpage-background"></div>
             )}

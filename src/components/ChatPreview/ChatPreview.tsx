@@ -2,11 +2,11 @@ import React, { useEffect } from "react";
 import "./ChatPreview.css";
 import test_logo from "../../icons/logo-test.jpg";
 import { CallbackFunction } from "../../types";
-import { chatData } from "../../types";
+import { ChatData } from "../../types";
 type chatPreviewProps = {
   handleClick: CallbackFunction;
   active: boolean;
-} & chatData;
+} & ChatData;
 const ChatPreview: React.FC<chatPreviewProps> = ({
   idInstance,
   apiTokenInstance,

@@ -1,10 +1,10 @@
 .chat-container {
-  min-width: 100%;
+  min-width: 81vw;
 }
 .chat-items {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+
   justify-content: center;
 }
 .chat-header {
@@ -14,9 +14,11 @@
 }
 .chat-view {
   flex-grow: 3;
-  min-width: 100vw;
+  height: 80vh;
+  max-height: inherit;
   background-image: url("../../icons/whatsapp-background.jpg");
   padding: 40px 24px;
+  overflow: scroll;
 }
 .chat-footer {
   width: 100%;
