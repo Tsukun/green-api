@@ -1,0 +1,45 @@
+.chatpreview-container {
+  min-width: 366px;
+  min-height: 76px;
+  padding: 8px 12px;
+}
+.chatpreview-container:focus {
+  background-color: #d1e4e8;
+  outline: 1px solid;
+}
+.chatpreview-sections {
+  display: flex;
+  flex-direction: row;
+}
+.chatpreview-logo {
+}
+.chatpreview-section {
+}
+.chatpreview-content {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 0 12px;
+}
+.chatpreview-name {
+  font-size: 16px;
+  line-height: 150%;
+}
+.chatpreview-message {
+  display: flex;
+  flex-direction: column;
+  font-size: 10px;
+  line-height: 133%;
+}
+.chatpreview-selected {
+  background: #d1e4e8;
+  border-radius: 8px;
+  padding: 12px 8px;
+}
+.idInstance {
+  font-size: inherit;
+  line-height: inherit;
+}
+.apiToken {
+  font-size: inherit;
+  line-height: inherit;
+}

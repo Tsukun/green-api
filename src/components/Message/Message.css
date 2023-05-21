@@ -1,0 +1,20 @@
+.message-container {
+  width: 297px;
+  padding: 16px 24px;
+  border-radius: 16px 16px 16px 0px;
+  margin: 0 0 16px 0;
+}
+.message-text {
+  font-size: 14px;
+  line-height: 126%;
+  font-weight: 400;
+  color: #010101;
+}
+
+.my-message {
+  background: #ffffff;
+}
+
+.another-message {
+  background: #d7f8f4;
+}
