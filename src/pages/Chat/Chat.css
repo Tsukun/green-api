@@ -1,5 +1,5 @@
 .chat-container {
-  min-width: 81vw;
+  width: 100%;
 }
 .chat-items {
   display: flex;
@@ -15,7 +15,6 @@
 .chat-view {
   flex-grow: 3;
   height: 80vh;
-  max-height: inherit;
   background-image: url("../../icons/whatsapp-background.jpg");
   padding: 40px 24px;
   overflow: scroll;

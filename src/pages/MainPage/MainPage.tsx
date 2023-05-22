@@ -36,10 +36,7 @@ const MainPage: React.FC = () => {
       } else {
         if (
           chatsList.some(
-            (element) =>
-              element.chatData.apiTokenInstance === chatData.apiTokenInstance &&
-              element.chatData.idInstance === chatData.idInstance &&
-              element.chatData.phoneNumber === chatData.phoneNumber
+            (element) => element.chatData.phoneNumber === chatData.phoneNumber
           )
         ) {
           alert("Данный чат уже существует");
@@ -115,19 +112,17 @@ const MainPage: React.FC = () => {
 
                 {chatsList.map((element, index) => {
                   return (
-                    <>
-                      <div className="leftbar-item">
-                        <ChatPreview
-                          key={"chatpreview" + index}
-                          {...element.chatData}
-                          active={
-                            element.chatData.phoneNumber ==
-                            selectedChat?.phoneNumber
-                          }
-                          handleClick={handleSelectedChat}
-                        ></ChatPreview>
-                      </div>
-                    </>
+                    <div className="leftbar-item">
+                      <ChatPreview
+                        key={"chatpreview" + index}
+                        {...element.chatData}
+                        active={
+                          element.chatData.phoneNumber ==
+                          selectedChat?.phoneNumber
+                        }
+                        handleClick={handleSelectedChat}
+                      ></ChatPreview>
+                    </div>
                   );
                 })}
               </div>

@@ -43,7 +43,7 @@ const Chat: React.FC<ChatList> = ({ chatData, messages }: ChatList) => {
             </div>
           </div>
           <div className="chat-view">
-            {messagesList.map((element, index) => {
+            {messages.map((element, index) => {
               return (
                 <Message
                   message={element.message}

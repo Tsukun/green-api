@@ -1,5 +1,5 @@
 .message-container {
-  width: 297px;
+  width: fit-content;
   padding: 16px 24px;
   border-radius: 16px 16px 16px 0px;
   margin: 0 0 16px 0;
