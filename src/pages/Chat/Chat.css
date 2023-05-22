@@ -34,8 +34,10 @@
 }
 
 .chat-input {
-  min-width: 568px;
-  min-height: 48px;
+  max-height: 48px;
+  width: 40.55%;
+  overflow: auto;
+  word-wrap: break-word;
   background: #ffffff;
   border-radius: 24px;
   padding: 12px 16px;
