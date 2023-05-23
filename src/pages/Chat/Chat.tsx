@@ -1,19 +1,40 @@
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import "./Chat.css";
 import Message from "../../components/Message/Message";
 import { ChatList, ChatMessage } from "../../types";
+import { sendMessage } from "../../http/green-api-http";
 
-const Chat: React.FC<ChatList> = ({ chatData, messages }: ChatList) => {
-  const [messagesList, setMessagesList] = useState<ChatMessage[]>(messages);
+type ChatProps = ChatList & {
+  chatIndex: number;
+  setChatsList: Dispatch<SetStateAction<ChatList[]>>;
+  chatsList: ChatList[];
+};
+
+const Chat: React.FC<ChatProps> = ({
+  chatData,
+  messages,
+  chatsList,
+  chatIndex,
+  setChatsList,
+}: ChatProps) => {
   const [sendedMessage, setSendedMessage] = useState<string>("");
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      messages.push({ message: sendedMessage, type: "own" });
+      const temp_message = { message: sendedMessage, type: "own" };
+      const destructiveChatList: ChatList[] = [...chatsList];
+      destructiveChatList[chatIndex] = {
+        chatData,
+        messages: [...messages, temp_message],
+      };
+      setChatsList(destructiveChatList);
 
-      setMessagesList((prevMessages) => [
-        ...prevMessages,
-        { message: sendedMessage, type: "own" },
-      ]);
+      sendMessage(
+        chatData.idInstance,
+        chatData.apiTokenInstance,
+        chatData.phoneNumber,
+        temp_message.message
+      );
+
       setSendedMessage("");
     }
   };
@@ -27,7 +48,6 @@ const Chat: React.FC<ChatList> = ({ chatData, messages }: ChatList) => {
         <div className="chat-items">
           <div className="chat-header">
             <div className="chat-header-name">
-              {" "}
               +
               {`${chatData.phoneNumber.slice(0, 1)} 
                   (${chatData.phoneNumber.slice(

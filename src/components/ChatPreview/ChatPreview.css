@@ -1,5 +1,5 @@
 .chatpreview-container {
-  min-width: 366px;
+  width: 100%;
   min-height: 76px;
   padding: 8px 12px;
 }
@@ -27,6 +27,7 @@
 .chatpreview-message {
   display: flex;
   flex-direction: column;
+
   font-size: 10px;
   line-height: 133%;
 }
@@ -38,8 +39,12 @@
 .idInstance {
   font-size: inherit;
   line-height: inherit;
+  max-width: 200px;
+  word-wrap: break-word;
 }
 .apiToken {
   font-size: inherit;
   line-height: inherit;
+  max-width: 200px;
+  word-wrap: break-word;
 }

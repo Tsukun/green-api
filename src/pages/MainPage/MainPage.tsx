@@ -1,12 +1,16 @@
 import * as React from "react";
 import "./MainPage.css";
 import ChatPreview from "../../components/ChatPreview/ChatPreview";
-import { useState } from "react";
-import { ChatData, ChatList } from "../../types";
+import { useEffect, useState } from "react";
+import { ChatData, ChatList, NotificationMessage } from "../../types";
 import Chat from "../Chat/Chat";
+import {
+  deleteNotification,
+  receiveNotification,
+} from "../../http/green-api-http";
 
 const MainPage: React.FC = () => {
-  const [chatsList, setChatList] = useState<ChatList[]>([]);
+  const [chatsList, setChatsList] = useState<ChatList[]>([]);
   const [chatData, setChatData] = useState<ChatData>({
     idInstance: "",
     apiTokenInstance: "",
@@ -48,12 +52,53 @@ const MainPage: React.FC = () => {
           return;
         }
         setChatData({ idInstance: "", apiTokenInstance: "", phoneNumber: "" });
-        setChatList((oldList) => [...oldList, { chatData, messages: [] }]);
+        setChatsList((oldList) => [...oldList, { chatData, messages: [] }]);
       }
     }
   };
   const handleChatData = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChatData({ ...chatData, [event.target.name]: event.target.value });
+  };
+
+  const handleIncomingMessage = async () => {
+    return await Promise.all(
+      chatsList.map((element: ChatList, index: number) => {
+        return receiveNotification(
+          element.chatData.idInstance,
+          element.chatData.apiTokenInstance
+        ).then((response) => {
+          const responseData: NotificationMessage =
+            response.data as NotificationMessage;
+          if (responseData.body.typeWebhook === "incomingMessageReceived") {
+            const chatIndex: number = chatsList
+              .map((e) => e.chatData.phoneNumber)
+              .indexOf(responseData.body.senderData.sender.split("@")[0]);
+            console.log(chatIndex);
+            console.log(responseData.body.senderData.sender.split("@")[0]);
+            const destructiveChatList: ChatList[] = [...chatsList];
+            console.log(responseData.body.messageData);
+            destructiveChatList[chatIndex] = {
+              chatData: destructiveChatList[chatIndex].chatData,
+              messages: [
+                ...destructiveChatList[chatIndex].messages,
+                {
+                  message:
+                    responseData.body.messageData.textMessageData.textMessage,
+                  type: "another",
+                },
+              ],
+            };
+            setChatsList(destructiveChatList);
+          }
+          deleteNotification(
+            element.chatData.idInstance,
+            element.chatData.apiTokenInstance,
+            responseData.receiptId
+          );
+          return responseData;
+        });
+      })
+    );
   };
 
   const handleSelectedChat = ({
@@ -69,6 +114,8 @@ const MainPage: React.FC = () => {
       phoneNumber,
     });
   };
+
+  useEffect(() => {}, []);
   return (
     <>
       <div className="container">
@@ -108,6 +155,28 @@ const MainPage: React.FC = () => {
                       onKeyDown={handleKeyPress}
                     />
                   </div>
+                  <button
+                    onClick={() =>
+                      handleIncomingMessage().then(
+                        (data: NotificationMessage[]) => {
+                          data.forEach((notificationElement) => {
+                            if (
+                              notificationElement.body.typeWebhook ===
+                              "incomingMessageReceived"
+                            ) {
+                              console.log(
+                                notificationElement.body.senderData.sender
+                              );
+                            } else {
+                              console.log(notificationElement.receiptId);
+                            }
+                          });
+                        }
+                      )
+                    }
+                  >
+                    onClick
+                  </button>
                 </div>
 
                 {chatsList.map((element, index) => {
@@ -130,10 +199,16 @@ const MainPage: React.FC = () => {
           </div>
           <div className="row_leftbar">
             {selectedChat ? (
-              chatsList.map((element, index) => {
+              chatsList.map((element: ChatList, index: number) => {
                 return (
                   element.chatData.phoneNumber == selectedChat.phoneNumber && (
-                    <Chat {...element} key={"chat" + index}></Chat>
+                    <Chat
+                      {...element}
+                      key={"chat" + index}
+                      setChatsList={setChatsList}
+                      chatsList={chatsList}
+                      chatIndex={index}
+                    ></Chat>
                   )
                 );
               })
