@@ -76,3 +76,12 @@
   min-width: 81vw;
   background-image: url("../../icons/whatsapp-background.jpg");
 }
+
+.system-buttons {
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+
+.system-buttons:not(:last-child) {
+  margin: 0 12px 0 0;
+}

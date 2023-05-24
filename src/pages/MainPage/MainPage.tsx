@@ -8,6 +8,7 @@ import {
   deleteNotification,
   receiveNotification,
 } from "../../http/green-api-http";
+import { promises } from "stream";
 
 const MainPage: React.FC = () => {
   const [chatsList, setChatsList] = useState<ChatList[]>([]);
@@ -17,7 +18,9 @@ const MainPage: React.FC = () => {
     phoneNumber: "",
   });
 
-  const [selectedChat, setSelectedChat] = useState<ChatData>();
+  const [selectedChat, setSelectedChat] = useState<ChatData | undefined>(
+    undefined
+  );
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
@@ -61,7 +64,7 @@ const MainPage: React.FC = () => {
   };
 
   const handleIncomingMessage = async () => {
-    return await Promise.all(
+    return await Promise.allSettled(
       chatsList.map((element: ChatList, index: number) => {
         return receiveNotification(
           element.chatData.idInstance,
@@ -73,8 +76,16 @@ const MainPage: React.FC = () => {
             const chatIndex: number = chatsList
               .map((e) => e.chatData.phoneNumber)
               .indexOf(responseData.body.senderData.sender.split("@")[0]);
-            console.log(chatIndex);
-            console.log(responseData.body.senderData.sender.split("@")[0]);
+            console.log(responseData);
+
+            if (chatIndex === -1) {
+              deleteNotification(
+                element.chatData.idInstance,
+                element.chatData.apiTokenInstance,
+                responseData.receiptId
+              );
+              return responseData;
+            }
             const destructiveChatList: ChatList[] = [...chatsList];
             console.log(responseData.body.messageData);
             destructiveChatList[chatIndex] = {
@@ -114,8 +125,30 @@ const MainPage: React.FC = () => {
       phoneNumber,
     });
   };
+  useEffect(() => {
+    return setChatsList(
+      JSON.parse(
+        !localStorage.getItem("chatsHistory")
+          ? "[]"
+          : localStorage.getItem("chatsHistory")!
+      )
+    );
+  }, []);
+  useEffect(() => {
+    if (chatsList.length > 0)
+      localStorage.setItem("chatsHistory", JSON.stringify(chatsList));
+  }, [chatsList]);
 
-  useEffect(() => {}, []);
+  const clearChatsList = () => {
+    localStorage.clear();
+    setChatsList([]);
+    setSelectedChat(undefined);
+    setChatData({
+      idInstance: "",
+      apiTokenInstance: "",
+      phoneNumber: "",
+    });
+  };
   return (
     <>
       <div className="container">
@@ -155,30 +188,18 @@ const MainPage: React.FC = () => {
                       onKeyDown={handleKeyPress}
                     />
                   </div>
+                </div>
+                <div className="leftbar-item">
                   <button
-                    onClick={() =>
-                      handleIncomingMessage().then(
-                        (data: NotificationMessage[]) => {
-                          data.forEach((notificationElement) => {
-                            if (
-                              notificationElement.body.typeWebhook ===
-                              "incomingMessageReceived"
-                            ) {
-                              console.log(
-                                notificationElement.body.senderData.sender
-                              );
-                            } else {
-                              console.log(notificationElement.receiptId);
-                            }
-                          });
-                        }
-                      )
-                    }
+                    className="system-buttons"
+                    onClick={handleIncomingMessage}
                   >
-                    onClick
+                    Update Chat Message
+                  </button>
+                  <button className="system-buttons" onClick={clearChatsList}>
+                    Clear All Chats
                   </button>
                 </div>
-
                 {chatsList.map((element, index) => {
                   return (
                     <div className="leftbar-item">
